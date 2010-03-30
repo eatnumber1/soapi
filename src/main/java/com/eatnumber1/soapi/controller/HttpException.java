@@ -1,5 +1,6 @@
 package com.eatnumber1.soapi.controller;
 
+import com.eatnumber1.util.MessageBundle;
 import org.apache.commons.httpclient.HttpStatus;
 
 /**
@@ -7,6 +8,8 @@ import org.apache.commons.httpclient.HttpStatus;
  * @since Mar 29, 2010
  */
 public class HttpException extends Exception {
+    private static MessageBundle messages = MessageBundle.getMessageBundle(HttpException.class);
+
     private int code;
 
     public HttpException() {
@@ -36,9 +39,8 @@ public class HttpException extends Exception {
     @Override
     public String getMessage() {
         StringBuilder sb = new StringBuilder();
-        sb.append("HTTP Error (").append(code).append("): ");
-        sb.append(HttpStatus.getStatusText(code)).append("\n");
-        sb.append(super.toString());
+        sb.append(messages.getMessage("com.eatnumber1.soapi.controller.error.http", code, HttpStatus.getStatusText(code)));
+        sb.append("\n").append(super.toString());
         return sb.toString();
     }
 }

@@ -1,16 +1,16 @@
 package com.eatnumber1.soapi.controller;
 
+import com.eatnumber1.util.MessageBundle;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Random;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.htmlparser.util.ParserException;
 import org.jetbrains.annotations.NotNull;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Random;
 
 /**
  * @author Russell Harmon
@@ -20,6 +20,9 @@ public class SoapController {
     public static final String SOAP_URI_KEY = "soapi.uri";
     public static final String LOCAL_HOST_KEY = "soapi.local.host";
     public static final String LOCAL_PORT_KEY = "soapi.local.port";
+
+    @NotNull
+    private static MessageBundle messages = MessageBundle.getMessageBundle(SoapController.class);
 
     @NotNull
     private HttpClient httpClient = new HttpClient();
@@ -36,7 +39,7 @@ public class SoapController {
         String localHost = System.getProperty(LOCAL_HOST_KEY);
         if( localHost == null ) {
             // TODO
-            throw new UnsupportedOperationException("Auto-discovery of local address not (yet) supported.");
+            throw new UnsupportedOperationException(messages.getMessage("com.eatnumber1.soapi.controller.error.localhost-autodiscovery-unsupported"));
         } else {
             try {
                 localUri = new URI("http", null, localHost, port, null, null, null);
@@ -95,5 +98,6 @@ public class SoapController {
         SoapController ctl = new SoapController();
         ctl.setLocation(SoapLocation.SOUTH_VADER);
         ctl.play();
+
     }
 }

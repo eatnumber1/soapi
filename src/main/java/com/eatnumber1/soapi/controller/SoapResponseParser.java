@@ -1,5 +1,7 @@
 package com.eatnumber1.soapi.controller;
 
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
@@ -13,14 +15,13 @@ import org.htmlparser.util.ParserException;
 import org.htmlparser.visitors.TextExtractingVisitor;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-
 /**
  * @author Russell Harmon
  * @since Mar 29, 2010
  */
 public class SoapResponseParser {
+    public static final String SOAP_RESPONSE_ENCODING_KEY = "soapi.soap.encoding";
+
     private Parser parser;
 
     public SoapResponseParser() {
@@ -35,7 +36,7 @@ public class SoapResponseParser {
     }
 
     public void setParser( @NotNull InputStream in ) throws UnsupportedEncodingException {
-        parser = new Parser(new Lexer(new Page(in, "US-ASCII")));
+        parser = new Parser(new Lexer(new Page(in, System.getProperty(SOAP_RESPONSE_ENCODING_KEY, "US-ASCII"))));
     }
 
     @NotNull

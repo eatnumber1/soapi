@@ -1,5 +1,6 @@
 package com.eatnumber1.soapi.controller;
 
+import com.eatnumber1.util.MessageBundle;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -8,6 +9,9 @@ import org.jetbrains.annotations.NotNull;
  */
 public enum SoapResponse {
     OK("OK");
+
+    @NotNull
+    private static MessageBundle messages = MessageBundle.getMessageBundle(SoapResponse.class);
 
     @NotNull
     private String response;
@@ -21,6 +25,6 @@ public enum SoapResponse {
         for( SoapResponse r : values() ) {
             if( r.response.equals(v) ) return r;
         }
-        throw new UnsupportedOperationException("Unsupported server response" + v);
+        throw new UnsupportedOperationException(messages.getMessage("com.eatnumber1.soapi.controller.error.response-unsupported", v));
     }
 }
