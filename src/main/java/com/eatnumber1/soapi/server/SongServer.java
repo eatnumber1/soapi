@@ -4,8 +4,8 @@ import com.eatnumber1.soapi.SoapiConstants;
 import com.eatnumber1.util.MessageBundle;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,7 +30,6 @@ public class SongServer {
 
     private Playlist playlist;
     private final Server server = new Server(SoapiConstants.getLocalPort());
-    private final Lock serverRunningLock = new ReentrantLock();
 
     public SongServer() {
     }
@@ -47,43 +46,38 @@ public class SongServer {
         this.playlist = playlist;
     }
 
-    public void waitForStart() throws InterruptedException {
-        if( server.isStarted() ) return;
-        synchronized( server ) {
-            server.wait();
-        }
-    }
-
-    public void start() throws Exception {
+    @NotNull
+    public CyclicBarrier start() throws Exception {
         assert playlist != null;
+        final CyclicBarrier finishedBarrier = new CyclicBarrier(2);
         server.addHandler(new AbstractHandler() {
             @Override
-            protected void doStart() throws Exception {
-                super.doStart();
-                synchronized( server ) {
-                    server.notifyAll();
-                }
-            }
-
-            @Override
             public void handle( String s, HttpServletRequest request, HttpServletResponse response, int i ) throws IOException, ServletException {
-                log.info(messages.getMessage("com.eatnumber1.soapi.server.connected", request.getRemoteHost()));
+                log.info(messages.getMessage("com.eatnumber1.soapi.server.playing.begin", request.getRemoteHost(), playlist));
                 OutputStream os = response.getOutputStream();
                 try {
                     for( Song song : playlist.getSongs() ) {
+                        log.info(messages.getMessage("com.eatnumber1.soapi.server.playing.song", song));
                         IOUtils.copy(new AutoCloseInputStream(song.open()), os);
                     }
                 } finally {
                     IOUtils.closeQuietly(os);
                 }
-                log.info(messages.getMessage("com.eatnumber1.soapi.server.done", request.getRemoteHost()));
+                log.info(messages.getMessage("com.eatnumber1.soapi.server.playing.done", request.getRemoteHost()));
                 try {
-                    server.stop();
-                } catch( Exception e ) {
+                    finishedBarrier.await();
+                } catch( InterruptedException e ) {
+                    throw new RuntimeException(e);
+                } catch( BrokenBarrierException e ) {
                     throw new RuntimeException(e);
                 }
             }
         });
         server.start();
+        return finishedBarrier;
+    }
+
+    public void stop() throws Exception {
+        server.stop();
     }
 }

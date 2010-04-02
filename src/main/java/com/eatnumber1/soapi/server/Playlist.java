@@ -26,10 +26,6 @@ public class Playlist {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        for( Song s : songs ) {
-            sb.append(s).append('\n');
-        }
-        return sb.toString();
+        return songs.toString();
     }
 }
