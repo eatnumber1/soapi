@@ -1,11 +1,10 @@
 package com.eatnumber1.soapi.server;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Russell Harmon
@@ -23,5 +22,10 @@ public class SongFile implements Song {
     @Override
     public InputStream open() throws FileNotFoundException {
         return new FileInputStream(file);
+    }
+
+    @Override
+    public String toString() {
+        return file.toString();
     }
 }

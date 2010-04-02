@@ -68,6 +68,7 @@ public class SoapController {
         PostMethod method = new PostMethod(soapUri.toString());
         method.addParameter(new NameValuePair("bathroom", location.getKey()));
         method.addParameter(new NameValuePair("stream", localUri.toString()));
+        log.info(messages.getMessage("com.eatnumber1.soapi.controller.info.request", location.name(), localUri.toString()));
         log.debug(messages.getMessage("com.eatnumber1.soapi.controller.debug.request", Arrays.toString(method.getParameters())));
         try {
             int statusCode = httpClient.executeMethod(method);
@@ -79,6 +80,5 @@ public class SoapController {
         } finally {
             method.releaseConnection();
         }
-        log.info(messages.getMessage("com.eatnumber1.soapi.controller.request_sent", location.name(), localUri.toString()));
     }
 }

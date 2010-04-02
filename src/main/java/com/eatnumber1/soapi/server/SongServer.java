@@ -32,10 +32,6 @@ public class SongServer {
     private final Server server = new Server(SoapiConstants.getLocalPort());
     private final Lock serverRunningLock = new ReentrantLock();
 
-    {
-        serverRunningLock.lock();
-    }
-
     public SongServer() {
     }
 
